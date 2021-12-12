@@ -1,0 +1,119 @@
+#langkah-langkah
+
+1. install django
+pip install Django
+
+2. start project django
+django-admin startproject project
+
+3. buat file sqlite
+python namaproject/manage.py migrate
+contoh : python project/manage.py migrate
+
+4. runserver
+python project/manage.py runserver
+
+5. masuk direktori project
+cd project
+
+6. membuat/menjalankan aplikasi
+python manage.py startapp namaapp
+contoh : python manage.py startapp todos
+
+7. tambahkan ke settings.py INSTALLED_APPS
+
+8. definisikan models di file models.py
+---------------------------------------------
+# Create your models here.
+class Todo(models.Model):
+    title = models.CharField(max_length=255, default='')
+    description = models.CharField(max_length=255, default='')
+---------------------------------------------
+
+9. membuat tabel di sqlite untuk project todos
+python manage.py makemigrations
+
+10. START YOUR VIEW
+view terbagi menjadi 2; method base dan class base
+------------------------------------------
+########cara membuat view############
+
+from django.http import HttpResponse
+
+#create your views here.
+
+def index(request):
+return HttpResponse('Hello view')
+------------------------------------------
+
+11. buat file urls untuk 'routing' karena apps tidak menyediakan
+klik kanan pada package 'todos' - new - python file - beri nama 'urls'
+
+12. merouting urls
+-----------------------------------------------------
+from django.urls import path
+
+from .views import index
+
+urlpatterns = [
+    path('hello_index', index, name='hello_index'),
+    path('ini_url', index, name='ini_url'),
+]
+-----------------------------------------------------
+
+django memiliki master routing yang terletak pada package project - urls.py. django memecah routing berdasarkan
+apps yang kita buat.
+
+13. menambahkan urls.py dari todos ke master urls pada project
+-----------------------
+from django.conf.urls import url
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    url(r'^admin/', admin.site.urls),
+    path('', include('todos.urls'))
+]
+-----------------------
+
+14. coba run server di port tertentu
+python manage.py runserver 8004
+
+kemudian check di web dengan mengetikkan
+http://127.0.0.1:8004/hello_index
+
+15. menambahkan fungsi penjumlahan di views.py
+-----------------------
+def add(request,no1, no2):
+    result = no1 + no2
+    return HttpResponse('The result is : ' + str(result))
+-----------------------
+
+16. menambahkan path url pada todos\urls.py
+-----------------------
+from .views import index, add
+
+urlpatterns = [
+    path('hello_index', index, name='hello_index'),
+    path('add/<int:no1>/<int:no2>', add, name='add'),
+]
+-----------------------
+17. cek di web
+http://127.0.0.1:8004/add/1/20
+
+18.buat directory templates di todos (di appnya)
+
+19. buat direktori didalam templates namanya todos (harus sama dengan nama apps)
+
+20. buat html file didalam direktori todos namanya index_todo
+
+21. menambahkan fungsi html di views.py
+-----------------------
+def cth_html(request):
+    return render(request=request, template_name='todos/index_todo.html')
+-----------------------
+
+22. menambahkan path url pada todos\urls.py
+-----------------------
+path('coba_template', cth_html, name='contoh'),
+-----------------------
